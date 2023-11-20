@@ -6,11 +6,11 @@ import {
   establishPayer,
   // Función para verificar si el programa está implementado
   checkProgram,
-  // Función para realizar una operación de "vender libro"
+  // Función para realizar una operación de "vender accion"
   sharePurchase,
   // Función para obtener el número de compras realizadas
   reportBuys,
-  // Importa las funciones desde el módulo './store_books'
+  // Importa las funciones desde el módulo './AppleStockSim'
 } from './AppleStockSim';
 
 async function main() {
@@ -25,7 +25,7 @@ async function main() {
   // Verifica si el programa ha sido implementado
   await checkProgram();
 
-  // Realiza una operación de "vender libro"
+  // Realiza una operación de "vender accion"
   await sharePurchase();
 
   // Obtiene la cantidad de compras realizadas

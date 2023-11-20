@@ -44,20 +44,20 @@ let buyPubkey: PublicKey;
 /**
  * Ruta a los archivos binarios del contrato desplegado y a las claves del mismo
  */
-const PROGRAM_PATH = path.resolve(__dirname, '../../dist/program');
+const PROGRAM_PATH = path.resolve(__dirname, '../dist/program');
 
 /**
  * ruta especifica al archivo objeto del contrato desplegado en solana.
  * Este archivo se crea al ejecutar cualquiera de los siguientes comandos:
  *   - `npm run build:program-rust`
  */
-const PROGRAM_SO_PATH = path.join(PROGRAM_PATH, 'AppleStockSim.so');
+const PROGRAM_SO_PATH = path.join(PROGRAM_PATH, 'apple_stock_sim.so');
 
 /**
  * Ruta al par de claves del programa desplegado.
  * Este archivo se crea al ejecutar `solana program deploy dist/program/AppleStockSim.so`.
  */
-const PROGRAM_KEYPAIR_PATH = path.join(PROGRAM_PATH, 'AppleStockSim-keypair.json');
+const PROGRAM_KEYPAIR_PATH = path.join(PROGRAM_PATH, 'apple_stock_sim-keypair.json');
 
 /**
  * El estado de una cuenta de compra gestionada por el programa "AppleStockSim"
@@ -123,7 +123,7 @@ export async function establishPayer(): Promise<string> {
     await connection.confirmTransaction(sig); // Confirma la transacción del airdrop.
     lamports = await connection.getBalance(payer.publicKey); // Actualiza el saldo.
   }
-  const information = '\"cuenta\": '+payer.publicKey.toBase58() +', \"cantidad\": ' + lamports / LAMPORTS_PER_SOL+'}';
+  const information = '\"billetera\": \"'+payer.publicKey.toBase58() +'\", \"balance\": ' + lamports / LAMPORTS_PER_SOL+', ';
   return information;
   console.log(
       'Usando la cuenta',
@@ -137,7 +137,7 @@ export async function establishPayer(): Promise<string> {
 /**
  * Comprueba si el programa "AppleStockSim" desplegado se ha implementado
  */
-export async function checkProgram(): Promise<void> {
+export async function checkProgram(): Promise<string> {
   // Lee el ID del programa desde el archivo de par de claves
   try {
     const programKeypair = await createKeypairFromFile(PROGRAM_KEYPAIR_PATH);
@@ -162,6 +162,8 @@ export async function checkProgram(): Promise<void> {
   } else if (!programInfo.executable) {
     throw new Error(`El programa no es ejecutable`);
   }
+  const information = '\"idContrato\": \"'+programId.toBase58()+'\"}';
+
   console.log(`Usando el programa ${programId.toBase58()}`);
 
   // Deriva la dirección (clave pública) de una cuenta de compra a partir del programa para que sea fácil de encontrar más tarde.
@@ -197,6 +199,7 @@ export async function checkProgram(): Promise<void> {
     );
     await sendAndConfirmTransaction(connection, transaction, [payer]);
   }
+  return information;
 }
 
 /**
@@ -229,7 +232,7 @@ export async function reportBuys(): Promise<string> {
       BuyAccount,
       accountInfo.data,
   );
-  const information = '{\"cuenta\": '+buyPubkey.toBase58() +', \"cantidad\": ' +buy.counter+', ';
+  const information = '{\"cuenta\": \"'+buyPubkey.toBase58() +'\", \"cantidad\": ' +buy.counter+', ';
   return  information;
   console.log(
       buyPubkey.toBase58(),
